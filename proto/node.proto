@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+message node {
+    required string register = 1;
+    required string author = 2;
+    required string text = 3;
+    required string tag = 4;
+}

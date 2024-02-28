@@ -1,0 +1,38 @@
+{
+  "_from": "pathchain",
+  "_id": "pathchain@1.0.48",
+  "_inBundle": false,
+  "_integrity": "sha512-Hy79zNg//OJHMfQTjL910l6VdznFVnACVLN3qK1je15y35S/JF0bcRTaNrMNqA82U+Pj8IwrK5rQs1Hf2Kufsw==",
+  "_location": "/pathchain",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "pathchain",
+    "name": "pathchain",
+    "escapedName": "pathchain",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/pathchain/-/pathchain-1.0.48.tgz",
+  "_shasum": "a629b6221ff1b3c4a96f6038f8849dd6d81c7731",
+  "_spec": "pathchain",
+  "_where": "C:\\xampp\\htdocs\\regenesis\\pathchain-testing",
+  "bundleDependencies": false,
+  "dependencies": {
+    "date-and-time": "^3.0.2",
+    "empty-dir": "^3.0.0",
+    "fs": "^0.0.1-security",
+    "js-sha256": "^0.9.0",
+    "protocol-buffers": "^5.0.0"
+  },
+  "deprecated": false,
+  "description": "![image](https://user-images.githubusercontent.com/104391124/282268780-cbbc1ee6-8d97-4d80-b896-66ae3eb723dd.png)",
+  "name": "pathchain",
+  "version": "1.0.49"
+}

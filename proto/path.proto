@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message path {
+    required string register = 1;
+    required string author = 2;
+    required string text = 3;
+    required string head = 4;
+    required string ancestor = 5;
+    optional string chain = 6;
+    required string tag = 7;
+}
