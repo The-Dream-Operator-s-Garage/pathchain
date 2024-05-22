@@ -41,6 +41,25 @@ function checkEmptyDir(dir) {
     return empty_dir
 }
 
+/** checkFile
+ * [Function that returns TRUE if file exists, FALSE if not]
+ * 
+ * @param {string} dir (required)
+ * 
+ * @return {bool} empty_dir
+ */
+function checkFile(dir){
+    try {
+        if (fs.existsSync(dir)) {
+          return true;
+        }
+      } catch(err) {
+        console.error(err)
+    }
+    return false;
+}
+
+
 /** isSecretUsed
  * [Function that returns TRUE if secret has been used, FALSE if not]
  * 
@@ -77,5 +96,6 @@ function isSecretUsed(xsecret, xauthor = "") {
 
 // CHECKING THE SECRET CHECKS THE SECRET
 
-module.exports = { checkDir, checkFiles, checkEmptyDir, isSecretUsed };
+module.exports = { checkDir, checkFiles, checkFile, checkEmptyDir, isSecretUsed };
+
                                                                          

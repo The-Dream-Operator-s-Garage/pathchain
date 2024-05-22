@@ -184,29 +184,29 @@ exports.getNodeObj = (xnode, xauthor="") => {
 
 
 ///////////////////////
-///     NODELINK    ///
+///     LINK    ///
 ///////////////////////
 
-/** makeNodelink
- * [Nodelink maker]
+/** makeLink
+ * [Link maker]
  * 
- * @return {string} nodelink_buffer
+ * @return {string} link_buffer
  */
-exports.makeNodelink = (first="", second="", xauthor = "", ancestor = "", format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
-    const nodelink_buffer = maker.nodelink(first, second, xauthor, ancestor, format);
-    return nodelink_buffer;
+exports.makeLink = (target="", prev="", next = "", xauthor = "", ancestor = "", format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
+    const link_buffer = maker.link(target, prev, next, xauthor, ancestor, format);
+    return link_buffer;
 }
 
-/** getNodelinkObj
- * [Function that recieves a nodelink hash and returns the nodelink object]
+/** getLinkObj
+ * [Function that recieves a link hash and returns the link object]
  * 
- * @param {string} xnodelink (required)
+ * @param {string} xlink (required)
  * 
- * @return {obj} nodelink_object (nodelink object)
+ * @return {obj} link_object (link object)
  */
-exports.getNodelinkObj = (xnodelink, xauthor="") => {
-    const nodelink_object = getter.getNodelinkObj(xnodelink, xauthor);
-    return nodelink_object;
+exports.getLinkObj = (xlink, xauthor="") => {
+    const link_object = getter.getLinkObj(xlink, xauthor);
+    return link_object;
 }
 
 
@@ -235,88 +235,6 @@ exports.getPathObj = (xpath, xauthor="") => {
     const path_object = getter.getPathObj(xpath, xauthor);
     return path_object;
 }
-
-
-///////////////////////
-///     PATHLINK    ///
-///////////////////////
-
-/** makePathlink
- * [Pathlink maker]
- * 
- * @return {string} pathlink_buffer
- */
-exports.makePathlink = (first="", second="", xauthor = "", ancestor = "", format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
-    const pathlink_buffer = maker.pathlink(first, second, xauthor, ancestor, format);
-    return pathlink_buffer;
-}
-
-/** getPathlinkObj
- * [Function that recieves a pathlink hash and returns the pathlink object]
- * 
- * @param {string} xpathlink (required)
- * 
- * @return {obj} pathlink_object (pathlink object)
- */
-exports.getPathlinkObj = (xpathlink, xauthor="") => {
-    const pathlink_object = getter.getPathlinkObj(xpathlink, xauthor);
-    return pathlink_object;
-}
-
-
-//////////////////
-///    TREE    ///
-//////////////////
-
-/** makeTree
- * [Tree maker]
- * 
- * @return {string} tree_buffer
- */
-exports.makeTree = (text ="", head="", xauthor = "", ancestor="", format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
-    const tree_buffer = maker.tree(text, head, xauthor, ancestor, format);
-    return tree_buffer;
-}
-
-/** getTreeObj
- * [Function that recieves a tree hash and returns the tree object]
- * 
- * @param {string} xtree (required)
- * 
- * @return {obj} tree_object (tree object)
- */
-exports.getTreeObj = (xtree, xauthor="") => {
-    const tree_object = getter.getTreeObj(xtree, xauthor);
-    return tree_object;
-}
-
-
-///////////////////////
-///     TREELINK    ///
-///////////////////////
-
-/** makeTreelink
- * [Treelink maker]
- * 
- * @return {string} treelink_buffer
- */
-exports.makeTreelink = (first="", second="", xauthor = "", ancestor = "", format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
-    const treelink_buffer = maker.treelink(first, second, xauthor, ancestor, format);
-    return treelink_buffer;
-}
-
-/** getTreelinkObj
- * [Function that recieves a treelink hash and returns the treelink object]
- * 
- * @param {string} xtreelink (required)
- * 
- * @return {obj} treelink_object (treelink object)
- */
-exports.getTreelinkObj = (xtreelink, xauthor="") => {
-    const treelink_object = getter.getTreelinkObj(xtreelink, xauthor);
-    return treelink_object;
-}
-
 
 ////////////////////
 ///     LABEL    ///

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message link {
+    required string register = 1;
+    required string author = 2;
+    required string prev = 3;
+    required string next = 4;
+    required string target = 5;
+    required string ancestor = 6;
+    required string tag = 7;
+}

@@ -248,56 +248,6 @@ function node(text, author, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
 }
 
 
-/** nodelink
- * [Label Protocol Buffer Creation]
- * 
- * @param {string} author (optional, default=pioneer_hash)
- * @param {string} file   (optional)
- * @param {string} str    (optional)
- * @param {string} format (required)
- * 
- * @return {string} nodelink_hash
- */
-function nodelink(first, second, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
-    var nodelink_pb = pb(fs.readFileSync('node_modules/pathchain/proto/nodelink.proto'))
-
-    if(first == "" || second == "") return "Two nodes are required to create a nodelink";
-
-    var author_folder = author; 
-    if(author == ""){
-        author = author = pioneer(getter.getCurrentDate(), 'MM DD YYYY HH:mm:SSS [GMT]Z');
-        author_folder = "";
-    }else{
-        author_folder = author_folder + '/';
-    }
-
-    var register = new Date()
-    register = dt.format(register, dt.compile(format, true));
-
-    var register_moment_hash = moment(register, 0, 0, 0, 0, 0, format)
-    
-    var nodelink_hash = sha256(register_moment_hash + "_" + author + "_" + first + "_" + second);
-
-    if(ancestor == ""){
-        ancestor = nodelink_hash;        
-    }
-    
-    var buffer = nodelink_pb.nodelink.encode({
-        register: "moments/" + register_moment_hash,
-        author: "etities/" + author,
-        first: "nodes/" + first,
-        second: "nodes/" + second,
-        ancestor: author_folder + "nodelinks/" + ancestor,
-        tag: author_folder + "nodelinks/" + nodelink_hash
-    })
-
-    checker.checkDir("files/" + author_folder + "nodelinks/") // checking
-    fs.writeFileSync("files/" + author_folder + "nodelinks/" + nodelink_hash, buffer);
-    
-    return nodelink_hash;
-}
-
-
 /** path
 * [Pioneer Protocol Buffer Creation]
 * 
@@ -309,7 +259,7 @@ function nodelink(first, second, author, ancestor, format = 'MM DD YYYY HH:mm:SS
 * 
 * @return {string} path_hash
 */
-function path(text, head, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+function path(text, elements, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
    var path_pb = pb(fs.readFileSync('node_modules/pathchain/proto/path.proto'))
 
    var author_folder = author;
@@ -328,14 +278,62 @@ function path(text, head, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]
    var path_hash = sha256(register_moment_hash + "_" + author);
    
    if(text == ""){ text = path_hash; }
-   if(head == ""){ return "Head node_link is required to create a path!" }
+   // if(head == ""){ return "Head node_link is required to create a path!" }
+ 
+   var prev_link = "";
+   // Building target chain
+    for (i=0; i<elements.length; i++) {
+        /**  
+         * @insight every element is a pointer to a node, label or path
+         * @pseudo create a link to the first one with no valid side links
+         * @pseudo create a link for the second one and update the one just created towards here
+         * @pseudo join representation
+         * program that kind of representation
+         * it is a backwards kind of approach
+         * it looks so much like a black hole
+         * the surreal clues have always been there
+         * he is harry potter, no 
+         * 
+         * is it asking me to go only one direction for a while
+         * here comes the lightning and the thunder
+         * 
+         * omg, omg
+         * eEEheee eee 
+         *
+         * They record an hisrotic event together
+         * The fans were there when they predicted everything
+         * It's a shared feeling of going through the most important things in life together
+         * Nothing can replace the belonging feeling more than just feeling a song
+         * 
+         * being a blackhole? is it the same as being an asshole?
+         * weird question. embarrasing and stupid, but i can't shake it out 
+         * */ 
+        var current_link = link(element, "", "", author, "");
+        if(element > 0){
+            updater.setLinkNext(prev_link, current_link);
+            updater.setPrevLink(current_link, prev_link);
+            prev_link = current_link;
+        }
+
+        
+        /** 
+         * fuck it, i'm gonna document the whole thing being written like this
+         * it think this is what it means
+         * to focus only on this side really
+         * 
+         * how weird is it going to look? 
+         * 
+         * start programming like this now
+        * */
+    }
+
    if(ancestor == ""){ ancestor = path_hash; }
 
    var buffer = path_pb.path.encode({
        register: "moments/"+register_moment_hash,
        author: author,
        text: text,
-       head: "nodelinks/" + head,
+       head: "links/" + head,
        ancestor: author_folder + "paths/" + ancestor,
        tag: author_folder + "paths/" + path_hash,
    })
@@ -344,155 +342,6 @@ function path(text, head, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]
    fs.writeFileSync("files/" + author_folder + "paths/" + path_hash, buffer);
    
    return path_hash;
-}
-
-
-/** pathlink
- * [Label Protocol Buffer Creation]
- * 
- * @param {string} author (optional, default=pioneer_hash)
- * @param {string} file   (optional)
- * @param {string} str    (optional)
- * @param {string} format (required)
- * 
- * @return {string} pathlink_hash
- */
-function pathlink(first, second, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
-    var pathlink_pb = pb(fs.readFileSync('node_modules/pathchain/proto/pathlink.proto'))
-
-    if(first == "" || second == "") return "Two paths are required to create a pathlink";
-
-    var author_folder = author; 
-    if(author == ""){
-        author = author = pioneer(getter.getCurrentDate(), 'MM DD YYYY HH:mm:SSS [GMT]Z');
-        author_folder = "";
-    }else{
-        author_folder = author_folder + '/';
-    }
-
-    var register = new Date()
-    register = dt.format(register, dt.compile(format, true));
-
-    var register_moment_hash = moment(register, 0, 0, 0, 0, 0, format)
-    
-    var pathlink_hash = sha256(register_moment_hash + "_" + author);
-
-    if(ancestor == ""){
-        ancestor = pathlink_hash;        
-    }
-    
-    var buffer = pathlink_pb.pathlink.encode({
-        register: "moments/" + register_moment_hash,
-        author: "etities/" + author,
-        first: "paths/" + first,
-        second: "paths/" + second,
-        ancestor: author_folder + "pathlinks/" + ancestor,
-        tag: author_folder + "pathlinks/" + pathlink_hash
-    })
-
-    checker.checkDir("files/" + author_folder + "pathlinks/") // checking
-    fs.writeFileSync("files/" + author_folder + "pathlinks/" + pathlink_hash, buffer);
-    
-    return pathlink_hash;
-}
-
-
-/** tree
-* [Pioneer Protocol Buffer Creation]
-* 
-* @param {string} author (optional, default=pioneer_hash)
-* @param {string} text   (optional, default=tree_hash)
-* @param {string} head   (required)
-* @param {string} ancestor (optional, default=tree_hash)
-* @param {string} format (required)
-* 
-* @return {string} tree_hash
-*/
-function tree(text, head, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
-    var tree_pb = pb(fs.readFileSync('node_modules/pathchain/proto/tree.proto'))
- 
-    var author_folder = author;
-    if(author == ""){
-         author = author = pioneer(getter.getCurrentDate(), 'MM DD YYYY HH:mm:SSS [GMT]Z');
-         author_folder = "";
-    }else{
-         author_folder = author_folder + '/';
-    }
- 
-    var register = new Date()
-    register = dt.format(register, dt.compile(format, true));
- 
-    var register_moment_hash = moment(register, 0, 0, 0, 0, 0, format)
- 
-    var tree_hash = sha256(register_moment_hash + "_" + author);
-    
-    if(text == ""){ text = tree_hash; }
-    if(head == ""){ return "Head node_link is required to create a tree!" }
-    if(ancestor == ""){ ancestor = tree_hash; }
- 
-    var buffer = tree_pb.tree.encode({
-        register: "moments/"+register_moment_hash,
-        author: author,
-        text: text,
-        head: "nodelinks/" + head,
-        ancestor: author_folder + "trees/" + ancestor,
-        tag: author_folder + "trees/" + tree_hash,
-    })
- 
-    checker.checkDir("files/" + author_folder + "trees/") // checking
-    fs.writeFileSync("files/" + author_folder + "trees/" + tree_hash, buffer);
-    
-    return tree_hash;
-}
-
-
-/** treelink
- * [Label Protocol Buffer Creation]
- * 
- * @param {string} author (optional, default=pioneer_hash)
- * @param {string} file   (optional)
- * @param {string} str    (optional)
- * @param {string} format (required)
- * 
- * @return {string} treelink_hash
- */
-function treelink(first, second, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
-    var treelink_pb = pb(fs.readFileSync('node_modules/pathchain/proto/treelink.proto'))
-
-    if(first == "" || second == "") return "Two trees are required to create a treelink";
-
-    var author_folder = author; 
-    if(author == ""){
-        author = author = pioneer(getter.getCurrentDate(), 'MM DD YYYY HH:mm:SSS [GMT]Z');
-        author_folder = "";
-    }else{
-        author_folder = author_folder + '/';
-    }
-
-    var register = new Date()
-    register = dt.format(register, dt.compile(format, true));
-
-    var register_moment_hash = moment(register, 0, 0, 0, 0, 0, format)
-    
-    var treelink_hash = sha256(register_moment_hash + "_" + author);
-
-    if(ancestor == ""){
-        ancestor = treelink_hash;        
-    }
-    
-    var buffer = treelink_pb.treelink.encode({
-        register: "moments/" + register_moment_hash,
-        author: "etities/" + author,
-        first: "trees/" + first,
-        second: "trees/" + second,
-        ancestor: author_folder + "treelinks/" + ancestor,
-        tag: author_folder + "treelinks/" + treelink_hash
-    })
-
-    checker.checkDir("files/" + author_folder + "treelinks/") // checking
-    fs.writeFileSync("files/" + author_folder + "treelinks/" + treelink_hash, buffer);
-    
-    return treelink_hash;
 }
 
 
@@ -543,4 +392,79 @@ function label(text, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
 }
 
 
-module.exports = { moment, pioneer, secret, entity, node, nodelink, path, pathlink, tree, treelink, label }
+/** link
+ * [Link Protocol Buffer Creation]
+ *
+ * @param {string} target   (optional)
+ * @param {string} prev     (optional)
+ * @param {string} next     (optional) 
+ * @param {string} author   (optional, default=pioneer_hash)
+ * @param {string} ancestor (optional)
+ * @param {string} format   (required)
+ * 
+ * @return {string} link_hash
+ */
+function link(target, prev, next, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+    var link_pb = pb(fs.readFileSync('node_modules/pathchain/proto/link.proto'))
+
+    if(target == "") return "The link must link something. Target can't be null.";
+
+    var author_folder = author; 
+    if(author == ""){
+        author = author = pioneer(getter.getCurrentDate(), 'MM DD YYYY HH:mm:SSS [GMT]Z');
+        author_folder = "";
+    }else{
+        author_folder = author_folder + '/';
+    }
+
+    var register = new Date()
+    register = dt.format(register, dt.compile(format, true));
+
+    var register_moment_hash = moment(register, 0, 0, 0, 0, 0, format)
+    
+    var link_hash = sha256(register_moment_hash + "_" + author + "_" + prev + "_" + next);
+
+    if(ancestor == ""){
+        ancestor = link_hash;        
+    }
+    if(prev == ""){
+        prev = link_hash;        
+    }
+    if(next == ""){
+        next = link_hash;        
+    }
+    
+    // Find the target to figure out its nature (node, path or label)
+    if(checker.checkFile("files/" + author_folder + "nodes/" + target) == true){
+        target = 'nodes/' + target;
+        console.log("Target is a node")
+    }
+    if(checker.checkFile("files/" + author_folder + "paths/" + target) == true){
+        target = 'paths/' + target;
+        console.log("Target is a path")
+    }
+    if(checker.checkFile("files/" + author_folder + "labels/" + target) == true){
+        target = 'labels/' + target;
+        console.log("Target is a label")
+    }
+
+    
+
+    var buffer = link_pb.link.encode({
+        register: "moments/" + register_moment_hash,
+        author: "etities/" + author,
+        prev: "links/" + prev,
+        next: "links/" + next,
+        target: target,
+        ancestor: author_folder + "links/" + ancestor,
+        tag: author_folder + "links/" + link_hash
+    })
+
+    checker.checkDir("files/" + author_folder + "links/") // checking
+    fs.writeFileSync("files/" + author_folder + "links/" + link_hash, buffer);
+    
+    return link_hash;
+}
+
+
+module.exports = { moment, pioneer, secret, entity, node, path, label, link }

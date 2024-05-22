@@ -9,7 +9,7 @@ var pb = require('protocol-buffers');
  * @return {string} xsecret
  */
 function useSecret(xsecret, xauthor = "") {
-    if(xauthor != ""){
+    if(xauthor == ""){
         xauthor = xauthor + '/';
     }
 
@@ -43,4 +43,98 @@ function useSecret(xsecret, xauthor = "") {
     return secret_obj;
 }
 
-module.exports = { useSecret }
+
+/** setLinkNext
+ * [Function that updates the 'next' pointer of a link]
+ * 
+ * @param {string} xlink
+ * @param {string} xnextlink
+ * 
+ * @return {string} xlink
+ */
+function setLinkNext(xlink = "", xnextlink = "") {
+
+    // LOADING PB
+    var link_pb = pb(fs.readFileSync('node_modules/pathchain/proto/link.proto'))
+    
+    // EXCEPTIONS FOR NOT FOUND LINKS
+    var fileContents;
+
+    // NOT FOUND EXCEPTION FOR 'xlink'
+    try {
+        fileContents = fs.readFileSync("files/links/" + xlink);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return "Link '" + xlink + "' not found";
+        } else {
+            throw err;
+        }
+    }
+
+    // NOT FOUND EXCEPTION FOR 'xnextlink'
+    try {
+        fileContents = fs.readFileSync("files/links/" + xnextlink);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return "Link '" + xnextlink + "' not found";
+        } else {
+            throw err;
+        }
+    }
+
+    // DECODING LINK
+    var link_enc = fileContents
+    var link_obj = link_pb.link.decode(link_enc)
+
+    link_obj.next = xnextlink;
+    return link_obj;
+}
+
+
+/** setLinkPrev
+ * [Function that updates the 'previous' pointer of a link]
+ * 
+ * @param {string} xlink
+ * @param {string} xprevlink
+ * 
+ * @return {string} xlink
+ */
+function setLinkPrev(xlink = "", xprevlink = "") {
+
+    // LOADING PB
+    var link_pb = pb(fs.readFileSync('node_modules/pathchain/proto/link.proto'))
+    
+    // EXCEPTIONS FOR NOT FOUND LINKS
+    var fileContents;
+
+    // NOT FOUND EXCEPTION FOR 'xlink'
+    try {
+        fileContents = fs.readFileSync("files/links/" + xlink);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return "Link '" + xlink + "' not found";
+        } else {
+            throw err;
+        }
+    }
+
+    // NOT FOUND EXCEPTION FOR 'xprevlink'
+    try {
+        fileContents = fs.readFileSync("files/links/" + xprevlink);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return "Link '" + xprevlink + "' not found";
+        } else {
+            throw err;
+        }
+    }
+
+    // DECODING LINK
+    var link_enc = fileContents
+    var link_obj = link_pb.link.decode(link_enc)
+
+    link_obj.prev = xprevlink;
+    return link_obj;
+}
+
+module.exports = { useSecret, setLinkNext, setLinkPrev }

@@ -1,6 +1,7 @@
 var fs = require("fs");
 var pb = require('protocol-buffers');
 var dt = require('date-and-time');
+// const { getLinkObj } = require(".");
 
 /** getCurrentDate
  * [Function that returns current datetime string on "MMM DD YYYY HH:mm:ss [GMT]Z" format]
@@ -188,39 +189,39 @@ function getNodeObj(xnode, xauthor) {
 }
 
 
-/** getNodelinkObj
- * [Function that recieves a nodelink hash and returns the nodelink object]
+/** getLinkObj
+ * [Function that recieves a link hash and returns the link object]
  * 
- * @param {string} xnodelink (required)
+ * @param {string} xlink (required)
  * 
  * @return void
  */
-function getNodelinkObj(xnodelink, xauthor) {
+function getLinkObj(xlink, xauthor) {
 
     if(xauthor != ""){
         xauthor = xauthor + '/';
     }
 
     // LOADING PB
-    var nodelink_pb = pb(fs.readFileSync('node_modules/pathchain/proto/nodelink.proto'))
+    var link_pb = pb(fs.readFileSync('node_modules/pathchain/proto/link.proto'))
     
     // NOT FOUND EXCEPTION
     var fileContents;
     try {
-        fileContents = fs.readFileSync("files/" + xauthor + "nodelinks/" + xnodelink);
+        fileContents = fs.readFileSync("files/" + xauthor + "links/" + xlink);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Nodelink not found";
+            return "Link not found";
         } else {
             throw err;
         }
     }
 
     // DECODING NODE
-    var nodelink_enc = fileContents
-    var nodelink_obj = nodelink_pb.nodelink.decode(nodelink_enc)
+    var link_enc = fileContents
+    var link_obj = link_pb.link.decode(link_enc)
 
-    return nodelink_obj;
+    return link_obj;
 }
 
 
@@ -260,113 +261,6 @@ function getPathObj(xpath, xauthor) {
 }
 
 
-/** getPathlinkObj
- * [Function that recieves a pathlink hash and returns the pathlink object]
- * 
- * @param {string} xpathlink (required)
- * 
- * @return void
- */
-function getPathlinkObj(xpathlink, xauthor) {
-
-    if(xauthor != ""){
-        xauthor = xauthor + '/';
-    }
-
-    // LOADING PB
-    var pathlink_pb = pb(fs.readFileSync('node_modules/pathchain/proto/pathlink.proto'))
-    
-    // NOT FOUND EXCEPTION
-    var fileContents;
-    try {
-        fileContents = fs.readFileSync("files/" + xauthor + "pathlinks/" + xpathlink);
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            return "Pathlink not found";
-        } else {
-            throw err;
-        }
-    }
-
-    // DECODING PATHLINK
-    var pathlink_enc = fileContents
-    var pathlink_obj = pathlink_pb.pathlink.decode(pathlink_enc)
-
-    return pathlink_obj;
-}
-
-
-/** getTreeObj
- * [Function that recieves a tree hash and returns the tree object]
- * 
- * @param {string} xtree (required)
- * 
- * @return void
- */
-function getTreeObj(xtree, xauthor) {
-
-    if(xauthor != ""){
-        xauthor = xauthor + '/';
-    }
-
-    // LOADING PB
-    var tree_pb = pb(fs.readFileSync('node_modules/pathchain/proto/tree.proto'))
-    
-    // NOT FOUND EXCEPTION
-    var fileContents;
-    try {
-        fileContents = fs.readFileSync("files/" + xauthor + "trees/" + xtree);
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            return "Tree not found";
-        } else {
-            throw err;
-        }
-    }
-
-    // DECODING TREE
-    var tree_enc = fileContents
-    var tree_obj = tree_pb.tree.decode(tree_enc)
-
-    return tree_obj;
-}
-
-
-/** getTreelinkObj
- * [Function that recieves a treelink hash and returns the treelink object]
- * 
- * @param {string} xtreelink (required)
- * 
- * @return void
- */
-function getTreelinkObj(xtreelink, xauthor) {
-
-    if(xauthor != ""){
-        xauthor = xauthor + '/';
-    }
-
-    // LOADING PB
-    var treelink_pb = pb(fs.readFileSync('node_modules/pathchain/proto/treelink.proto'))
-    
-    // NOT FOUND EXCEPTION
-    var fileContents;
-    try {
-        fileContents = fs.readFileSync("files/" + xauthor + "treelinks/" + xtreelink);
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            return "Treelink not found";
-        } else {
-            throw err;
-        }
-    }
-
-    // DECODING TREELINK
-    var treelink_enc = fileContents
-    var treelink_obj = treelink_pb.treelink.decode(treelink_enc)
-
-    return treelink_obj;
-}
-
 
 /** getLabelObj
  * [Function that recieves a label hash and returns the label object]
@@ -404,4 +298,4 @@ function getLabelObj(xlabel, xauthor) {
 }
 
 
-module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getEntityObj, getNodeObj, getNodelinkObj, getPathObj, getPathlinkObj, getTreeObj, getTreelinkObj, getLabelObj }
+module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getEntityObj, getNodeObj, getLinkObj, getPathObj, getLabelObj }
