@@ -229,12 +229,14 @@ function path(text, elements, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [
     if (text == "") { text = path_hash; }
  
     let prev_link = "";
+    let head_link = "";
     // Building target chain
     for (let i = 0; i < elements.length; i++) {
         const current_link = link(elements[i], "", "", author, "");
+        if(i==0) head_link = current_link;
         if (i > 0) {
             updater.setLinkNext(prev_link, current_link);
-            updater.setPrevLink(current_link, prev_link);
+            updater.setLinkPrev(current_link, prev_link);
         }
         prev_link = current_link;
     }
@@ -245,7 +247,7 @@ function path(text, elements, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [
         register: `moments/${register_moment_hash}`,
         author: author,
         text: text,
-        head: `links/${prev_link}`,
+        head: `${head_link}`,
         ancestor: `${author_folder}paths/${ancestor}`,
         tag: `${author_folder}paths/${path_hash}`,
     });
@@ -311,11 +313,7 @@ function label(text, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
 function link(target, prev, next, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     // Load the link protocol buffer definition
     const link_pb = pb(fs.readFileSync('node_modules/pathchain/proto/link.proto'));
-
-    // Validate target
-    if (target === "") {
-        return "The link must be linking something. The target cannot be null.";
-    }
+    var target_type = "";
 
     // Handle author and author folder
     let author_folder = author; 
@@ -326,41 +324,61 @@ function link(target, prev, next, author, ancestor, format = 'MM DD YYYY HH:mm:S
         author_folder = `${author_folder}/`;
     }
 
+    // Validate target
+    if (target === "") {
+        return "The link must be linking something. The target cannot be null.";
+    }
+    else{
+        var splitted_target = target.split("/");
+        console.log("Splitted target: ", splitted_target);
+        if(splitted_target.length>1){
+            target_type = splitted_target[splitted_target.length - 2];
+            console.log("Target type: ", target_type);
+        }
+        else{
+            // Determine the nature of the target (node, path, or label)
+            if (checker.checkFile(`files/${author_folder}nodes/${target}`)) {
+                target_type = "nodes";
+                target = `${author_folder}nodes/${target}`;
+            } else if (checker.checkFile(`files/${author_folder}paths/${target}`)) {
+                target_type = "paths";
+                target = `${author_folder}paths/${target}`;
+            } else if (checker.checkFile(`files/${author_folder}labels/${target}`)) {
+                target_type = "labels";
+                target = `${author_folder}labels/${target}`;
+            }
+            console.log("Target type determined for single buffer: ", target_type);
+        }
+    }
+
+    // Checking target existance
+    if (!checker.checkFile(`files/${target}`)) {
+        return "Target was not found!";
+    }
+
+    // Homogenize the author.
+    // Break down the target address
+    // Make a copy of it inside *author* address if it is not public or if the original author is different than *author*
+    // What the fuck 
+
     // Create a moment for this link
     const register = dt.format(new Date(), dt.compile(format, true));
     const register_moment_hash = moment(register, 0, 0, 0, 0, 0, format);
     
     // Generate a unique hash for this link
     const link_hash = sha256(`${register_moment_hash}_${author}_${prev}_${next}`);
-
+    
     // Set default values if not provided
     if (ancestor === "") { ancestor = link_hash; }
     if (prev === "") { prev = link_hash; }
     if (next === "") { next = link_hash; }
-    
-    // Determine the nature of the target (node, path, or label)
-    let target_type = "";
-    if (checker.checkFile(`files/${author_folder}nodes/${target}`)) {
-        target_type = "nodes";
-    } else if (checker.checkFile(`files/${author_folder}paths/${target}`)) {
-        target_type = "paths";
-    } else if (checker.checkFile(`files/${author_folder}labels/${target}`)) {
-        target_type = "labels";
-    }
-    
-    if (target_type) {
-        target = `${target_type}/${target}`;
-        console.log(`Target is a ${target_type.slice(0, -1)}`);
-    } else {
-        console.log("Warning: Target type not recognized");
-    }
 
     // Encode the link data into a protocol buffer
     const buffer = link_pb.link.encode({
         register: `moments/${register_moment_hash}`,
         author: `entities/${author}`,
-        prev: `links/${prev}`,
-        next: `links/${next}`,
+        prev: `${author_folder}links/${prev}`,
+        next: `${author_folder}links/${next}`,
         target: target,
         ancestor: `${author_folder}links/${ancestor}`,
         tag: `${author_folder}links/${link_hash}`
@@ -370,7 +388,7 @@ function link(target, prev, next, author, ancestor, format = 'MM DD YYYY HH:mm:S
     checker.checkDir(`files/${author_folder}links/`);
     fs.writeFileSync(`files/${author_folder}links/${link_hash}`, buffer);
     
-    return link_hash;
+    return `${author_folder}links/${link_hash}`;
 }
 
 module.exports = { moment, pioneer, secret, entity, node, path, label, link };
