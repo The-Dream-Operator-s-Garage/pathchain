@@ -236,6 +236,18 @@ exports.getPathObj = (xpath, xauthor="") => {
     return path_object;
 }
 
+/** getPathChainObj
+ * [Function that recieves a path hash and returns the path object]
+ * 
+ * @param {string} xpath (required)
+ * 
+ * @return {obj} path_object (path object)
+ */
+exports.getPathChainObj = (xpath, xauthor="") => {
+    const path_object = getter.getPathChainObj(xpath, xauthor);
+    return path_object;
+}
+
 ////////////////////
 ///     LABEL    ///
 ////////////////////
@@ -262,3 +274,41 @@ exports.getLabelObj = (xlabel, xauthor="") => {
     return label_object;
 }
 
+/** getObj
+ * [Function that recieves a path hash and returns the path object]
+ * 
+
+ * Retrieves and decodes a address object from a file.
+ * @param {string} xaddress - The address string.
+ * @returns {Object|string} The decoded object or an error message.
+ */
+exports.getObj = (xaddress) => {
+    const pathchain_object = getter.getObj(xaddress);
+    return pathchain_object;
+}
+
+/** getPatheadObj
+ * [Function that recieves a path hash and returns the path object]
+ * 
+
+ * Retrieves and decodes a address object from a file.
+ * @param {string} xaddress - The address string.
+ * @returns {Object|string} The decoded object or an error message.
+ */
+exports.getPatheadObj = (xaddress) => {
+    const pathchain_object = getter.getPatheadObj(xaddress);
+    return pathchain_object;
+}
+
+/** getPathchainObj
+ * [Function that recieves a path hash and returns the path object]
+ * 
+
+ * Retrieves and decodes a address object from a file.
+ * @param {string} xaddress - The address string.
+ * @returns {Object|string} The decoded object or an error message.
+ */
+exports.getPatchainObj = (xaddress) => {
+    const pathchain_object = getter.getPatchainObj(xaddress);
+    return pathchain_object;
+}

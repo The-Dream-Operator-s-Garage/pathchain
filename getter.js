@@ -155,6 +155,110 @@ function getLabelObj(xlabel, xauthor = '') {
     }
 }
 
+
+/**
+ * Retrieves and decodes a address object from a file.
+ * @param {string} xaddress - The address string.
+ * @returns {Object|string} The decoded object or an error message.
+ */
+function getObj(xaddress) {
+    // const labelProto = pb(fs.readFileSync('node_modules/pathchain/proto/label.proto'));
+    const filePath = `files/${xaddress}`;
+    
+    var splitted_address = target.split("/");
+    console.log("Splitted address: ", splitted_target);
+    obj_type = splitted_address[splitted_address.length - 2];
+    console.log("Object type: ", obj_type);
+
+    try {
+        const fileContents = fs.readFileSync(filePath);
+        switch (obj_type) {
+            case "entities":
+                const entityProto = pb(fs.readFileSync('node_modules/pathchain/proto/entity.proto'));
+                return entityProto.entity.decode(fileContents);
+            case "labels":
+                const labelProto = pb(fs.readFileSync('node_modules/pathchain/proto/label.proto'));
+                return labelProto.label.decode(fileContents);
+            case "links":
+                const linkProto = pb(fs.readFileSync('node_modules/pathchain/proto/link.proto'));
+                return linkProto.link.decode(fileContents);
+            case "moments":
+                const momentProto = pb(fs.readFileSync('node_modules/pathchain/proto/moment.proto'));
+                return momentProto.moment.decode(fileContents);
+            case "nodes":
+                const nodeProto = pb(fs.readFileSync('node_modules/pathchain/proto/node.proto'));
+                return nodeProto.node.decode(fileContents);
+            case "paths":
+                const pathProto = pb(fs.readFileSync('node_modules/pathchain/proto/path.proto'));
+                return pathProto.path.decode(fileContents);
+            case "secrets":
+                const secretProto = pb(fs.readFileSync('node_modules/pathchain/proto/secret.proto'));
+                return secretProto.secret.decode(fileContents);
+        }        
+    }
+    catch (err) {
+        return err.code === 'ENOENT' ? "Element not found" : err;
+    }
+}
+
+/**
+ * Retrieves and decodes a path object from a file.
+ * @param {string} xpath - The path hash.
+ * @param {string} xauthor - The author of the path (optional).
+ * @returns {Object|string} The decoded path object or an error message.
+ */
+function getPatheadObj(xpath, xauthor = '') {
+    const pathProto = pb(fs.readFileSync('node_modules/pathchain/proto/path.proto'));
+    const filePath = `files/${xauthor ? xauthor + '/' : ''}paths/${xpath}`;
+    
+    try {
+        const fileContents = fs.readFileSync(filePath);
+        var pathObj =  pathProto.path.decode(fileContents);
+
+        var current_link = this.getObj(pathObj.head);
+        console.log("Head link", current_link);
+        var current_obj = this.getObj(current_link.target);
+        console.log("First object", current_obj);
+        // Get link -> get link.target
+        return pathObj;
+    } catch (err) {
+        return err.code === 'ENOENT' ? "Path not found" : err;
+    }
+}
+
+/**
+ * Retrieves and decodes a path object from a file.
+ * @param {string} xpath - The path hash.
+ * @param {string} xauthor - The author of the path (optional).
+ * @returns {Object|string} The decoded path object or an error message.
+ */
+function getPathchainObj(xpath, xauthor = '') {
+    const pathProto = pb(fs.readFileSync('node_modules/pathchain/proto/path.proto'));
+    const filePath = `files/${xauthor ? xauthor + '/' : ''}paths/${xpath}`;
+    
+    try {
+        const fileContents = fs.readFileSync(filePath);
+        var pathObj =  pathProto.path.decode(fileContents);
+
+        var current_link = this.getObj(pathObj.head);
+        console.log("Head link", current_link);
+        var current_obj = this.getObj(current_link.target);
+        console.log("First object", current_obj);
+
+        let obj_list = [];
+        // append targets to obj_list until the link's prev property points to itself
+        while (current_link.prev !== current_link.target) {
+            obj_list.push(current_obj);
+            current_link = this.getObj(current_link.prev);
+            current_obj = this.getObj(current_link.target);
+        }
+        // Get link -> get link.target
+        return obj_list;
+    } catch (err) {
+        return err.code === 'ENOENT' ? "Path not found" : err;
+    }
+}
+
 module.exports = {
     getCurrentDate,
     getMomentObj,
@@ -164,5 +268,8 @@ module.exports = {
     getNodeObj,
     getLinkObj,
     getPathObj,
-    getLabelObj
+    getLabelObj,
+    getObj,
+    getPatheadObj,
+    getPathchainObj
 };
