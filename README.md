@@ -740,14 +740,28 @@ var path_chain_obj = pathchain.getPathchainObj(path_buff);
 console.log("Path chain obj: ", path_chain_obj);
 ```
 
-Summoning `getPatheadObj(xaddress)` returns the head object of a path:
-```javascript
-const pathchain = require("pathchain"); // Summoning pathchain
-
-// Get the head object of a path
-var path_head_obj = pathchain.getPatheadObj(path_buff);
-
-console.log("Path head object: ", path_head_obj);
+Console: 
+``` bash
+Pathchain object:  [
+  {
+    register: 'moments/253414143d338fc68096a0e3710caf0874056ccebab0c5440cc1d2316b696814',
+    author: 'entities/23223e7b9a2e98456d42963de23a165c43248e1430adfaf4fd461959a109306c',
+    text: 'This is the content of a third public node',
+    tag: 'nodes/415024cff8dd263b3252592903b5d8f098298a0eed3ab67f372ea305cf2e137b'
+  },
+  {
+    register: 'moments/86e1a2571fb12fa4af49f43ead01819b85376564e017bda6f656cde6d33dc070',
+    author: 'entities/23223e7b9a2e98456d42963de23a165c43248e1430adfaf4fd461959a109306c',
+    text: 'This is the content of a second public node',
+    tag: 'nodes/0d1686603951c3e92a3122375d27a6ead4c3131d81fd321aee04c4729657b41d'
+  },
+  {
+    register: 'moments/897a9171765ca68fb5aa264b41040e107d741307918e1acd6dda2dbea36d7dfc',
+    author: 'entities/23223e7b9a2e98456d42963de23a165c43248e1430adfaf4fd461959a109306c',
+    text: 'This is the content of a public node',
+    tag: 'nodes/480cd79de90f3cd6d5aabd7847d0eb8ed416eb5c1054e27866e29524e6da754e'
+  }
+]
 ```
 
 ## Label
@@ -832,4 +846,43 @@ var node_buff = pathchain.makeNode("Test node");
 var obj = pathchain.getObj(node_buff);
 
 console.log("Object: ", obj);
+```
+
+Console:
+```bash
+Retrieving object of type:  nodes
+Object:  {
+  register: 'moments/253414143d338fc68096a0e3710caf0874056ccebab0c5440cc1d2316b696814',
+  author: 'entities/23223e7b9a2e98456d42963de23a165c43248e1430adfaf4fd461959a109306c',
+  text: 'This is the content of a third public node',
+  tag: 'nodes/415024cff8dd263b3252592903b5d8f098298a0eed3ab67f372ea305cf2e137b'
+}
+```
+
+
+#### Generic Object Type getter
+
+Parameter rules:
+|Parameter                |Required  |
+|-------------------------|----------|
+|{string} xaddress        |(required)|
+
+
+---
+Summoning `getType(xaddress)`:
+```javascript
+const pathchain = require("pathchain"); // Summoning pathchain
+
+// Having the tag/address of any object from the pathchain
+var buff_address = "nodes/415024cff8dd263b3252592903b5d8f098298a0eed3ab67f372ea305cf2e137b"
+
+// Infer its type!
+var buff_type = pathchain.getType(buff_address);
+
+console.log("Type: ", buff_type);
+```
+
+Console:
+```bash
+Type: node 
 ```
