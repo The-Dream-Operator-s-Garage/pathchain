@@ -42,7 +42,7 @@ function setLinkNext(xlink = '', xnextlink = '') {
     console.log('Setting link:', xnextlink);
     console.log('As NEXT link for:', xlink);
 
-    const linkProto = pb(fs.readFileSync('node_modules/pathchain/proto/link.proto'));
+    const link_pb = pb(fs.readFileSync('node_modules/pathchain/proto/link.proto'));
 
     try {
         // Check if both links exist
@@ -50,10 +50,16 @@ function setLinkNext(xlink = '', xnextlink = '') {
         fs.readFileSync(`files/${xnextlink}`);
 
         const fileContents = fs.readFileSync(`files/${xlink}`);
-        const linkObj = linkProto.link.decode(fileContents);
+        const linkObj = link_pb.link.decode(fileContents);
         linkObj.next = xnextlink;
-
-        return linkObj;
+        fs.writeFileSync(`files/${xlink}`, link_pb.link.encode(linkObj));
+        
+    
+        // Ensure the directory exists and overwrite the link buffer to a file
+        // checker.checkDir(`files/${xlink}`);
+        // fs.writeFileSync(`files/${xlink}`, buffer);
+        
+        return xlink;
     } catch (err) {
         return err.code === 'ENOENT' ? `Link '${err.path.split('/').pop()}' not found` : err;
     }
@@ -69,18 +75,19 @@ function setLinkPrev(xlink = '', xprevlink = '') {
     console.log('Setting link:', xprevlink);
     console.log('As PREV link for:', xlink);
 
-    const linkProto = pb(fs.readFileSync('node_modules/pathchain/proto/link.proto'));
+    const link_pb = pb(fs.readFileSync('node_modules/pathchain/proto/link.proto'));
 
     try {
-        // Check if both links exist
         fs.readFileSync(`files/${xlink}`);
         fs.readFileSync(`files/${xprevlink}`);
 
         const fileContents = fs.readFileSync(`files/${xlink}`);
-        const linkObj = linkProto.link.decode(fileContents);
+        const linkObj = link_pb.link.decode(fileContents);
         linkObj.prev = xprevlink;
+        fs.writeFileSync(`files/${xlink}`, link_pb.link.encode(linkObj));
+        
+        return xlink;
 
-        return linkObj;
     } catch (err) {
         return err.code === 'ENOENT' ? `Link '${err.path.split('/').pop()}' not found` : err;
     }

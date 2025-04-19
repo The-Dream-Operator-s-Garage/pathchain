@@ -235,12 +235,14 @@ function path(text, elements, author, ancestor, format = 'MM DD YYYY HH:mm:SSS [
     for (let i = 0; i < elements.length; i++) {
         // link with no next and no prev is set with its target as the current element
         const current_link = link(elements[i], "", "", author, "");
-        // onli if this is not the first element
+        // only if this is not the first element
         if (i > 0) {
+            // For the previous element, set the current element as its next element
             updater.setLinkNext(prev_link, current_link);
+            // For the current element, set the previous element as its previous element
             updater.setLinkPrev(current_link, prev_link);
         }
-        if(i==0) head_link = current_link;
+        head_link = current_link;
         // for the next iteration, the previous link is set as the current link
         prev_link = current_link;
     }

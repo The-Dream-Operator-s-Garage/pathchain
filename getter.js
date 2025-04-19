@@ -165,10 +165,10 @@ function getObj(xaddress) {
     // const labelProto = pb(fs.readFileSync('node_modules/pathchain/proto/label.proto'));
     const filePath = `files/${xaddress}`;
     
-    var splitted_address = target.split("/");
-    console.log("Splitted address: ", splitted_target);
-    obj_type = splitted_address[splitted_address.length - 2];
-    console.log("Object type: ", obj_type);
+    var splitted_address = xaddress.split("/");
+    // console.log("Splitted address: ", splitted_address);
+    var obj_type = splitted_address[splitted_address.length - 2];
+    console.log("Retrieving object of type: ", obj_type);
 
     try {
         const fileContents = fs.readFileSync(filePath);
@@ -194,6 +194,40 @@ function getObj(xaddress) {
             case "secrets":
                 const secretProto = pb(fs.readFileSync('node_modules/pathchain/proto/secret.proto'));
                 return secretProto.secret.decode(fileContents);
+        }        
+    }
+    catch (err) {
+        return err.code === 'ENOENT' ? "Element not found" : err;
+    }
+}
+
+/**
+ * Retrieves and returns the proto type that belongs the address object from a file.
+ * @param {string} xaddress - The address string.
+ * @returns {Object|string} The decoded object or an error message.
+ */
+function getType(xaddress) {
+    var splitted_address = xaddress.split("/");
+    console.log("Splitted address: ", splitted_address);
+    var obj_type = splitted_address[splitted_address.length - 2];
+    console.log("Retrieving object of type: ", obj_type);
+
+    try {
+        switch (obj_type) {
+            case "entities":
+                return "entity";
+            case "labels":
+                return "label";
+            case "links":
+                return "link";
+            case "moments":
+                return "moment";
+            case "nodes":
+                return "node";
+            case "paths":
+                return "path";
+            case "secrets":
+                return "secret";
         }        
     }
     catch (err) {
@@ -240,19 +274,26 @@ function getPathchainObj(xpath, xauthor = '') {
         const fileContents = fs.readFileSync(filePath);
         var pathObj =  pathProto.path.decode(fileContents);
 
-        var current_link = this.getObj(pathObj.head);
-        console.log("Head link", current_link);
-        var current_obj = this.getObj(current_link.target);
-        console.log("First object", current_obj);
-
-        let obj_list = [];
-        // append targets to obj_list until the link's prev property points to itself
-        while (current_link.prev !== current_link.target) {
+        var head_link = this.getObj(pathObj.head);
+        // console.log("Head link", head_link);
+       
+        var obj_list = [];
+        var current_link = head_link;
+        
+        // As the head is the last inserted element, we go backwards till there's no more linked elements
+        while (current_link.prev !== current_link.tag) {
+            // console.log("Current link: ", current_link);
+            // console.log("Trying to retrieve object from: ", current_link.target);
+            const current_obj = this.getObj(current_link.target);
+            console.log("Pushing object: ", current_obj);
             obj_list.push(current_obj);
             current_link = this.getObj(current_link.prev);
-            current_obj = this.getObj(current_link.target);
         }
-        // Get link -> get link.target
+        console.log("Pushing last element (current link target): ", current_link.target);
+        var current_link_target_obj = this.getObj(current_link.target);
+        console.log("Last element target object: ", current_link_target_obj);
+        obj_list.push(current_link_target_obj);
+
         return obj_list;
     } catch (err) {
         return err.code === 'ENOENT' ? "Path not found" : err;
@@ -270,6 +311,7 @@ module.exports = {
     getPathObj,
     getLabelObj,
     getObj,
+    getType,
     getPatheadObj,
     getPathchainObj
 };

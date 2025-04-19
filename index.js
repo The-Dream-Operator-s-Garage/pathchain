@@ -287,6 +287,19 @@ exports.getObj = (xaddress) => {
     return pathchain_object;
 }
 
+/** getType
+ * [Function that recieves a path hash and returns the path object]
+ * 
+
+ * Retrieves and decodes a address object from a file.
+ * @param {string} xaddress - The address string.
+ * @returns {Object|string} The decoded object or an error message.
+ */
+exports.getType = (xaddress) => {
+    const pathchain_type = getter.getType(xaddress);
+    return pathchain_type;
+}
+
 /** getPatheadObj
  * [Function that recieves a path hash and returns the path object]
  * 
@@ -308,7 +321,7 @@ exports.getPatheadObj = (xaddress) => {
  * @param {string} xaddress - The address string.
  * @returns {Object|string} The decoded object or an error message.
  */
-exports.getPatchainObj = (xaddress) => {
-    const pathchain_object = getter.getPatchainObj(xaddress);
+exports.getPathchainObj = (xaddress) => {
+    const pathchain_object = getter.getPathchainObj(xaddress);
     return pathchain_object;
 }
